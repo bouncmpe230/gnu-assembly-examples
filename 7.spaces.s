@@ -26,7 +26,8 @@ _start:
     jmp .loop
 
 .done:
-    add $'0', %bl
+    add $'0', %bl               # single digit: only correct for 0-9 spaces
+                                # (8.cmp_int.s shows multi-digit conversion)
     mov %bl, count(%rip)
 
     # print "Spaces: "

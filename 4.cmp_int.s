@@ -19,9 +19,9 @@ _start:
     lea buf1(%rip), %rsi
 convert1:
     movzbq (%rsi), %rcx
-    cmp $10, %rcx         
-    je done1
-    sub $'0', %rcx
+    sub $'0', %rcx        # rcx = digit value if the byte is '0'..'9'
+    cmp $9, %rcx          # unsigned: anything below '0' wraps to a huge value
+    ja done1              # not a digit ('\n', 0, ...) -> number ends
     imul $10, %r8
     add %rcx, %r8
     inc %rsi
@@ -29,6 +29,9 @@ convert1:
 done1:
 
     ### Read second number
+    ### (Typed input arrives one line per read. Piped input such as
+    ###  printf '30\n42\n' | ./4.cmp_int can arrive in the FIRST read,
+    ###  leaving buf2 empty -- then the second number is taken as 0.)
     mov $0, %rax
     mov $0, %rdi
     lea buf2(%rip), %rsi
@@ -40,9 +43,9 @@ done1:
     lea buf2(%rip), %rsi
 convert2:
     movzbq (%rsi), %rcx
-    cmp $10, %rcx
-    je done2
-    sub $'0', %rcx
+    sub $'0', %rcx        # rcx = digit value if the byte is '0'..'9'
+    cmp $9, %rcx          # unsigned: anything below '0' wraps to a huge value
+    ja done2              # not a digit ('\n', 0, ...) -> number ends
     imul $10, %r9
     add %rcx, %r9
     inc %rsi
@@ -56,7 +59,17 @@ done2:
     mov %r9, %rax
 
 use_r8:
-    ### Convert rax (bigger number) to string -> outstr
+    mov %rax, %r10        # syscalls overwrite rax; keep the result in r10
+
+    ### Print "Max: "
+    mov $1, %rax
+    mov $1, %rdi
+    lea prompt(%rip), %rsi
+    mov $5, %rdx
+    syscall
+
+    ### Convert r10 (bigger number) to string -> outstr
+    mov %r10, %rax
     mov $10, %rcx
     lea outstr+31(%rip), %rdi
     movb $0, (%rdi)
@@ -72,9 +85,10 @@ convloop:
     jnz convloop
 
     lea 1(%rdi), %rsi     # start of string
+    lea outstr+31(%rip), %rdx
+    sub %rsi, %rdx        # length = end - start (number of digits)
     mov $1, %rax
     mov $1, %rdi
-    mov $32, %rdx
     syscall
 
     ### Print newline

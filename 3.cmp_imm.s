@@ -37,9 +37,10 @@ use_rax:
     jnz .convert_loop
 
     lea 1(%rdi), %rsi     # start of string
+    lea outstr+31(%rip), %rdx
+    sub %rsi, %rdx        # length = end - start (number of digits)
     mov $1, %rax
     mov $1, %rdi
-    mov $32, %rdx
     syscall
 
     ### Print newline

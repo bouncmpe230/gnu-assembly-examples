@@ -9,12 +9,12 @@ _start:
     mov $0, %rdi
     lea buffer(%rip), %rsi
     mov $32, %rdx
-    syscall
+    syscall                 # rax = number of bytes actually read
 
+    mov %rax, %rdx          # write back only what was read (not all 32 bytes)
     mov $1, %rax
     mov $1, %rdi
     lea buffer(%rip), %rsi
-    mov $32, %rdx
     syscall
 
     mov $60, %rax
