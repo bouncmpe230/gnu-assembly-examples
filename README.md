@@ -36,6 +36,43 @@ All examples target **x86-64 Linux**.
 
 ---
 
+## Fall 2026 Problem Session (`fall26/`)
+
+The programs shown in the first assembly problem session. They use only
+`as` and `ld` (no C library), and every line is commented.
+
+| File | Topics | Run |
+| ---- | ------ | --- |
+| `fall26/01_hello.s` | `write` and `exit` syscalls | `./01_hello` |
+| `fall26/02_digits.s` | loop, indexed byte stores, building output in a buffer | `./02_digits` |
+| `fall26/03_echo.s` | `read` syscall, a first `call` / `ret` | `echo hi \| ./03_echo` |
+| `fall26/04_sum.s` | splitting a line into tokens, string → integer, integer → string | `echo "12 7 300" \| ./04_sum` |
+| `fall26/05_letters.s` | array of counters, unsigned range checks, output buffer | `echo "banana bread" \| ./05_letters` |
+| `fall26/06_winner.s` | array of records, field offsets with `.equ`, choosing with tie-breaks | `./06_winner` |
+
+### Exercises (`fall26/exercises/`)
+
+Try each exercise yourself before reading its solution.
+
+| Solution | Exercise | Example |
+| -------- | -------- | ------- |
+| `ex1_reverse.s` | Read up to 32 numbers from one line into an array, then print them in reverse order, separated by single spaces. | `echo "5 12 300 7" \| ./ex1_reverse` → `7 300 12 5` |
+| `ex2_booking.s` | One meeting room. Each booking is `ID-start-hours`; bookings do not overlap. Print one character per hour, from hour 0 to the end of the last booking: the ID of the booking that holds the room, or `.`. | `echo "A-0-3 B-5-2 C-3-1" \| ./ex2_booking` → `AAAC.BB` |
+| `ex3_rooms.s` | Three rooms, numbered 0 to 2. Each booking is `ID-room-start-hours`; bookings in the same room do not overlap. Print one line per room, all of the same length (the end of the latest booking). | `echo "A-0-0-3 B-1-1-2 C-0-4-1 D-2-2-3" \| ./ex3_rooms` → `AAA.C` / `.BB..` / `..DDD` |
+
+### Building
+
+Both directories have a Makefile that builds every `.s` file in it with
+`as` and `ld`:
+
+```bash
+cd fall26           # or fall26/exercises
+make              # builds all programs
+make clean        # removes them
+```
+
+---
+
 ## Basic Structure of a Program
 
 ```asm
